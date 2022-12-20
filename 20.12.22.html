@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+</head>
+<body>
+    <button type="button" id="btn">Загрузить</button><br>
+    <ul id="data-container"></ul>
+    <script>
+        
+        async function fetchJSONAsync(url, init) {
+            let response = await fetch(url, init);
+            if (response.ok) {
+                let json = await response.json();
+                return json;
+            }
+            else
+                throw new Error(`${response.status}: ${response.statusText}`);
+        }
+ 
+        document.getElementById("btn").onclick = btn_click;
+        let span;
+        let container = document.getElementById("data-container");
+ 
+        
+        async function btn_click() {
+            container.innerHTML = "";
+            if (span)
+                span.style.display = "";
+            else {
+                span = document.createElement("span");
+                span.innerText = "Загрузка...";
+                this.nextElementSibling.after(span);
+            }
+            try {
+                let res = await fetchJSONAsync("https://jsonplaceholder.typicode.com/users");
+                container.innerHTML = res
+                    .map(e => `<li><a href="#">${e.username}</a></li>`)
+                    .join("");
+            } catch (error) {
+                console.error(error.message);
+            }
+            finally {
+                span.style.display = "none";
+            }
+        }
+    </script>
+</body>
+</html>

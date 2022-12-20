@@ -1,0 +1,112 @@
+1versin.jpg<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        #data-container {
+            margin-left: 0;
+            /* Отступ слева в браузере IE и Opera */
+            padding-left: 0;
+            /* Отступ слева в браузере Firefox, Safari, Chrome */
+        }
+ 
+        li.photo-item {
+            list-style-type: none;
+            /* Убираем маркеры */
+        }
+        
+    </style>
+    <script type="text/javascript">
+        function insert(){
+            var src = document.getElementById("gamediv");
+            var img = document.createElement("img");
+            img.src = "img/eqp/"+this.apparel+"/"+this.facing+"_idle.png";
+            src.appendChild(img);
+        }
+     </script>
+</head>
+<body>
+    <div id="gamediv">
+         <script type="text/javascript">
+             insert();
+         </script>
+     </div>
+    <button type="button" id="btn">Загрузить</button><br>
+    <ul id="data-container"></ul>
+    <script>
+        /**
+         * Случайное целое число от min до max включительно
+         */
+        const rand = (min, max) => Math.floor(Math.random() * (max - min + 1) + min);
+        /**
+         * Задержка на определенное количество миллисекунд.
+         * @param {number} ms Количество миллисекунд задержки
+         */
+        const delay = ms => new Promise(resolve => setTimeout(() => resolve(), ms));
+ 
+        /**
+         * TAP-версия загрузки JSON по HTTP
+         * @param {RequestInfo} url Строка URL или объект Request
+         * @param {RequestInit | undefined} init Объект с опциями к запросу
+         * @returns {Promise<any>} Обещание вернуть JSON-объект
+         */
+        async function fetchJSONAsync(url, init) {
+            let response = await fetch(url, init);
+            if (response.ok) {
+                let json = await response.json();
+                return json;
+            }
+            else
+                throw new Error(`${response.status}: ${response.statusText}`);
+        }
+ 
+        async function getFastestLoadedPhoto(ids) {
+            // await delay(2000); // Безусловная начальная задержка, если нужно
+            let tasks = ids.map(async id => {
+                await delay(rand(0, 1000)); // Случайная задержка, чтобы картинки приходил хаотично
+                return fetchJSONAsync("https://jsonplaceholder.typicode.com/photos/" + id);
+            });
+            let obj = await Promise.race(tasks);
+            console.log(obj);
+            container.insertAdjacentHTML("beforeend", `
+<li class="photo-item">
+    <img
+        class="photo-item__image"
+        src="${obj.url}"
+    />
+    <h3 class="photo-item__title">
+        ${obj.title}
+    </h3>
+</li>`);
+        }
+ 
+        document.getElementById("btn").onclick = btn_click;
+        let span;
+        let container = document.getElementById("data-container");
+ 
+        // Асинхронная функция, являющаяся например обработчиком кнопки
+        // или при событии загрузки страницы
+        async function btn_click() {
+            this.disabled = true; // Блокировать кнопку
+            container.innerHTML = ""; // Если нужно, удалить прежнее содержимое контейнера
+            if (span)
+                span.style.display = "";
+            else {
+                span = document.createElement("span");
+                span.innerText = "Загрузка...";
+                this.nextElementSibling.after(span);
+            }
+            try {
+                await getFastestLoadedPhoto([60, 12, 55]);
+                console.log("Картинка загружена");
+            } catch (error) {
+                console.error(error.message);
+            }
+            finally {
+                span.style.display = "none"; // Скрыть надпись "Загрузка..."
+                this.disabled = false; // Разблокировать кнопку
+            }
+        }
+    </script>
+</body>
+</html>

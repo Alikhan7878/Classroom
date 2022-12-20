@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        #data-container {
+            margin-left: 0;
+ 
+            padding-left: 0;
+
+        }
+ 
+        #data-container>li {
+            list-style-type: none;
+
+        }
+    </style>
+</head>
+<body>
+    <button type="button" id="btn">Загрузить</button><br>
+    <ul id="data-container"></ul>
+    <script>
+        
+        const rand = (min, max) => Math.floor(Math.random() * (max - min + 1) + min);
+       
+        const delay = ms => new Promise(resolve => setTimeout(() => { resolve(); }, ms));
+ 
+        
+        async function fetchJSONAsync(url, init) {
+            let response = await fetch(url, init);
+            if (response.ok) {
+                let json = await response.json();
+                return json;
+            }
+            else
+                throw new Error(`${response.status}: ${response.statusText}`);
+        }
+ 
+        async function getUsersByIds(ids) {
+        
+            let tasks = ids.map(async id => {
+                await delay(rand(0, 1000)); 
+                console.log("id=" + id); 
+                return fetchJSONAsync("https://jsonplaceholder.typicode.com/users/" + id);
+            });
+            let users = await Promise.all(tasks);
+            console.log(users); 
+            for (let user of users)
+                container.insertAdjacentHTML("beforeend",
+                    `<li><a href="#">${user.username}</a></li>`);
+        }
+ 
+        document.getElementById("btn").onclick = btn_click;
+        let span;
+        let container = document.getElementById("data-container");
+ 
+        
+        async function btn_click() {
+            this.disabled = true; 
+            container.innerHTML = ""; 
+            if (span)
+                span.style.display = "";
+            else {
+                span = document.createElement("span");
+                span.innerText = "Загрузка...";
+                this.nextElementSibling.after(span);
+            }
+            try {
+                await getUsersByIds([5, 6, 2, 1]);
+                console.log("Список пользователей загружен");
+            } catch (error) {
+                console.error(error.message);
+            } finally {
+                span.style.display = "none"; 
+                this.disabled = false; 
+            }
+        }
+    </script>
+</body>
+</html>
