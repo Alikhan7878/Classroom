@@ -1,0 +1,56 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  <link href="styles.css" rel="stylesheet"> 
+</head>
+<body>
+  <header>
+  <h1> Регистрация на покупку билет чемпионата мира </h1>
+  </header> 
+  <nav>
+  <input type="button" class="showBD" value="Показать Таблицу" />
+  </nav>
+  <div class="container">
+    <form action="#" class="form">
+      <div class="form__wrapper">
+        <label class="form__item">
+          Mail:
+          <input class="form__item-input" type="text" placeholder="Введите своё ФИО">
+        </label>
+  
+        <label class="form__item">
+          Password::
+          <input class="form__item-input" type="number" placeholder="Введите дату рождения">
+        </label>
+  
+        <label class="form__item">
+          Address:
+          <input class="form__item-input" type="text" placeholder="Введите свой адрес проживания">
+        </label>
+  
+        <label class="form__item">
+          City:
+          <input class="form__item-input" type="text" placeholder="Введите свой факультет">
+        </label>
+
+        <label for="country" class="form_item">Country</label>
+          <select id="country" name="country" class="form-control">
+            <option>Choose</option>
+            <option value="argentina">Argentina</option>
+            <option value="russia">Russia</option>
+            <option value="china">China</option>
+          </select>
+
+        <label class="form_item" for="rules">
+          <input id="rules" type="checkbox" name="acceptRules" class="form-check-input">
+          Accept Rules
+        </label>
+  
+        <button class="form__submit" type="submit">Отправить</button>
+      </div>
+    </form>
+  </div>
+<script src="external.js"></script> 
+</body>
+</html>
